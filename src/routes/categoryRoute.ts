@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authMiddleware, checkRoleMiddleware } from "@/middleware/authMiddleware";
-import { createCategoryServiceController } from "@/controller/categoryModel";
+import { createCategoryServiceController } from "../controller/categoryController";
 
 const categoryRoute = Router();
 

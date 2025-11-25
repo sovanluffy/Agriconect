@@ -42,7 +42,7 @@ connectDB()
     app.use("/api/category", categoryRoute);
     app.use("/api/admin", assignRoute);
     app.use("/api", farmerRoute);
-    app.use("/api/product", productRoute);
+    app.use("/api", productRoute);
     app.use("/api", userRoute);
 
     // Start server

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authMiddleware, checkRoleMiddleware } from "@/middleware/authMiddleware";
-import { createCategoryServiceController } from "../controller/categoryController";
+import { createCategoryServiceController , deleteCategoryServiceController , getAllCategoriesServiceController } from "../controller/categoryController";
 
 const categoryRoute = Router();
 
@@ -59,4 +59,89 @@ categoryRoute.post(
   createCategoryServiceController
 );
 
+
+/**
+ * @swagger
+ * /api/category/{id}:
+ *   delete:
+ *     summary: Delete a category
+ *     tags: [Category]
+ *     description: Deletes a category by its ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Category ID
+ *     responses:
+ *       200:
+ *         description: Category deleted successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Category deleted successfully"
+ *               deletedCategory:
+ *                 _id: "6748dfaf8da1df9ac982b3a7"
+ *                 name: "Vegetables"
+ *                 description: "Fresh vegetable products"
+ *       400:
+ *         description: Invalid category ID or request
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Category ID is required"
+ *       404:
+ *         description: Category not found
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Category not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal server error"
+ */
+categoryRoute.delete(
+  "/:id",
+  authMiddleware,
+  checkRoleMiddleware("Admin"),
+  deleteCategoryServiceController
+);
+
+/**
+ * @swagger
+ * /api/category/categories:
+ *   get:
+ *     summary: Get all categories
+ *     tags: [Category]
+ *     description: Returns a list of all categories in the system
+ *     responses:
+ *       200:
+ *         description: List of categories retrieved successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Categories fetched successfully"
+ *               data:
+ *                 - _id: "6748dfaf8da1df9ac982b3a7"
+ *                   name: "Vegetables"
+ *                   description: "Fresh vegetable products"
+ *                 - _id: "6748dfaf8da1df9ac982b3a8"
+ *                   name: "Fruits"
+ *                   description: "Fresh fruits"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal server error"
+ */
+categoryRoute.get(
+  "/categories",
+  authMiddleware,
+  getAllCategoriesServiceController
+);
 export default categoryRoute;

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import {
   createProductService,
-  getAllProductsService,
+  getAllProductsPublicService,
   getProductByIdService,
   updateProductService,
   deleteProductService,
@@ -18,7 +18,7 @@ export const createProductController = (req: Request, res: Response) => {
 // Get All Products
 // ===============================
 export const getAllProductsController = (req: Request, res: Response) => {
-  return getAllProductsService(req, res);
+  return getAllProductsPublicService(req, res);
 };
 
 // ===============================

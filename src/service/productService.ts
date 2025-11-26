@@ -37,26 +37,19 @@ export const createProductService = async (req: Request, res: Response) => {
   }
 };
 
-// ===============================
-// Get All Products (Farmer Only)
-// ===============================
-export const getAllProductsService = async (req: Request, res: Response) => {
+export const getAllProductsPublicService = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?._id;
-    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+    const products = await ProductModel.find()
 
-    const farmer = await FarmerModel.findOne({ user_id: userId });
-    if (!farmer) return res.status(404).json({ message: "Farmer not found" });
-
-    const products = await ProductModel.find({ farmer_id: farmer._id })
-      .populate("category_id")
-      .populate("farmer_id");
-
-    return res.status(200).json({ message: "Products fetched successfully", data: products });
+    return res.status(200).json({
+      message: "All products fetched successfully",
+      data: products,
+    });
   } catch (err: any) {
     return res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 // ===============================
 // Get Product By ID

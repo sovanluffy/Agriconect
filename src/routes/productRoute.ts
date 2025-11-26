@@ -67,7 +67,7 @@ router.post("/products", authMiddleware, checkRoleMiddleware("Farmer"), createPr
  *     summary: Get all products for the logged-in farmer
  *     tags: [Product]
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     responses:
  *       200:
  *         description: List of products
@@ -95,7 +95,7 @@ router.get("/products", authMiddleware, getAllProductsController);
  *     summary: Get a product by ID
  *     tags: [Product]
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -125,7 +125,7 @@ router.get("/products/:id", authMiddleware, getProductByIdController);
  *     summary: Update a product by ID
  *     tags: [Product]
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id

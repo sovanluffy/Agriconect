@@ -13,7 +13,9 @@ import authRoute from "@/routes/authRoutes";
 import assignRoute from "@/routes/assginRole";
 import farmerRoute from "@/routes/farmerRoute";
 import productRoute from "@/routes/productRoute";
+import cartRoute from "@/routes/cartRoute";
 import userRoute from "@/routes/userRoute";
+import orderRoute from "@/routes/orderRoute";
 
 dotenv.config();
 
@@ -44,6 +46,8 @@ connectDB()
     app.use("/api", farmerRoute);
     app.use("/api", productRoute);
     app.use("/api", userRoute);
+    app.use("/api", cartRoute);
+    app.use("/api", orderRoute);
 
     // Start server
     app.listen(PORT, () => {

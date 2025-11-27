@@ -10,26 +10,22 @@ export const createProductService = async (req: Request, res: Response) => {
   try {
     const { name, price, stock, category_name, image } = req.body;
 
-    // Get user ID from token
     const userId = req.user?._id;
     if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
-    // Find Farmer by user ID
     const farmer = await FarmerModel.findOne({ user_id: userId });
     if (!farmer) return res.status(404).json({ message: "Farmer not found" });
 
-    // Find Category by name
     const category = await categoryModel.findOne({ name: category_name });
     if (!category) return res.status(404).json({ message: "Category not found" });
 
-    // Create product
     const product = await ProductModel.create({
       name,
       price,
       stock,
       category_id: category._id,
       farmer_id: farmer._id,
-      image: image || "", // take image from body
+      image: image || "",
     });
 
     return res.status(201).json({ message: "Product created successfully", data: product });
@@ -58,7 +54,6 @@ export const updateProductService = async (req: Request, res: Response) => {
       updateData.category_id = category._id;
     }
 
-    // Update image from body
     if (image) updateData.image = image;
 
     const product = await ProductModel.findOneAndUpdate(
@@ -95,11 +90,14 @@ export const deleteProductService = async (req: Request, res: Response) => {
   }
 };
 
-
-//Get All Products - Public Service
+// ===============================
+// Get All Products (Public)
+// ===============================
 export const getAllProductsPublicService = async (req: Request, res: Response) => {
   try {
-    const products = await ProductModel.find().populate("category_id").populate("farmer_id");
+    const products = await ProductModel.find()
+      .populate("category_id")
+      .populate("farmer_id");
     return res.status(200).json({ message: "Products retrieved successfully", data: products });
   } catch (err: any) {
     return res.status(500).json({ message: "Server error", error: err.message });

@@ -2,9 +2,9 @@
 import { Router } from "express";
 import {
   createProductController,
-  getAllProductsController,
-  getProductByIdController,
+  getAllProductsController,// optional public endpoint
   updateProductController,
+ 
   deleteProductController,
 } from "@/controller/productController";
 import { authMiddleware, checkRoleMiddleware } from "@/middleware/authMiddleware";
@@ -50,6 +50,9 @@ const router = Router();
  *               category_name:
  *                 type: string
  *                 example: "Vegetables"
+ *               image:
+ *                 type: string
+ *                 example: "https://example.com/images/tomato.jpg"
  *     responses:
  *       201:
  *         description: Product created successfully
@@ -64,7 +67,7 @@ router.post("/products", authMiddleware, checkRoleMiddleware("Farmer"), createPr
  * @swagger
  * /api/products:
  *   get:
- *     summary: Get all products for the logged-in farmer
+ *     summary: Get all products (admin only)
  *     tags: [Product]
  *     security:
  *       - BearerAuth: []
@@ -78,7 +81,7 @@ router.post("/products", authMiddleware, checkRoleMiddleware("Farmer"), createPr
  *               properties:
  *                 message:
  *                   type: string
- *                   example: Product list
+ *                   example: "Product list"
  *                 data:
  *                   type: array
  *                   items:
@@ -86,37 +89,33 @@ router.post("/products", authMiddleware, checkRoleMiddleware("Farmer"), createPr
  *       500:
  *         description: Server error
  */
-router.get("/products", authMiddleware, getAllProductsController);
+router.get("/products", authMiddleware, checkRoleMiddleware("Admin"), getAllProductsController);
 
 /**
  * @swagger
- * /api/products/{id}:
+ * /api/products/all:
  *   get:
- *     summary: Get a product by ID
+ *     summary: Get all products (public)
  *     tags: [Product]
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: Product ID
- *         schema:
- *           type: string
- *           example: "6770105ba3cde5512c88e444"
  *     responses:
  *       200:
- *         description: Product found
+ *         description: List of all products
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Product'
- *       404:
- *         description: Product not found
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "All products fetched successfully"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Product'
  *       500:
  *         description: Server error
  */
-router.get("/products/:id", authMiddleware, getProductByIdController);
+router.get("/products/all", getAllProductsController);
 
 /**
  * @swagger
@@ -156,6 +155,9 @@ router.get("/products/:id", authMiddleware, getProductByIdController);
  *                 type: string
  *                 enum: [active, out of stock]
  *                 example: active
+ *               image:
+ *                 type: string
+ *                 example: "https://example.com/images/tomato-new.jpg"
  *     responses:
  *       200:
  *         description: Product updated successfully
@@ -177,7 +179,7 @@ router.put("/products/:id", authMiddleware, checkRoleMiddleware("Farmer"), updat
  *     summary: Delete a product by ID
  *     tags: [Product]
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id

@@ -1,9 +1,7 @@
 import { Router } from "express";
-import {
-  addMultipleItemsController,
-  getCartController
-} from "@/controller/cartItemController";
-import { authMiddleware, checkRoleMiddleware } from "@/middleware/authMiddleware";
+import { addItemController } from "@/controller/cartItemController";
+import { authMiddleware } from "@/middleware/authMiddleware";
+
 const router = Router();
 
 /**
@@ -15,9 +13,9 @@ const router = Router();
 
 /**
  * @swagger
- * /api/cart/add-multiple-items:
+ * /api/cart/add-item:
  *   post:
- *     summary: Add multiple items to the cart
+ *     summary: Add a single item to the cart
  *     tags: [Cart]
  *     requestBody:
  *       required: true
@@ -26,39 +24,23 @@ const router = Router();
  *           schema:
  *             type: object
  *             required:
- *               - products
+ *               - product_id
+ *               - quantity
  *             properties:
- *               products:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     product_id:
- *                       type: string
- *                       example: "64a7f0c2e1b2c3d4e5f67890"
- *                     quantity:
- *                       type: integer
- *                       example: 2
+ *               product_id:
+ *                 type: string
+ *                 example: "64a7f0c2e1b2c3d4e5f67890"
+ *               quantity:
+ *                 type: integer
+ *                 example: 2
  *     responses:
  *       201:
- *         description: Items added to cart successfully
+ *         description: Item added to cart successfully
  *       400:
  *         description: Bad request
  */
-router.post("/cart/add-multiple-items",authMiddleware, addMultipleItemsController);
+router.post("/cart/add-item", authMiddleware, addItemController);
 
-/**
- * @swagger
- * /api/cart:
- *   get:
- *     summary: Get all items in the user's cart
- *     tags: [Cart]
- *     responses:
- *       200:
- *         description: List of cart items
- *       400:
- *         description: Bad request
- */
-router.get("/cart", getCartController);
+
 
 export default router;

@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import {
   createProductService,
   getAllProductsPublicService,
-  getProductByIdService,
   updateProductService,
   deleteProductService,
 } from "@/service/productService";
@@ -21,12 +20,7 @@ export const getAllProductsController = (req: Request, res: Response) => {
   return getAllProductsPublicService(req, res);
 };
 
-// ===============================
-// Get Product by ID
-// ===============================
-export const getProductByIdController = (req: Request, res: Response) => {
-  return getProductByIdService(req, res);
-};
+
 
 // ===============================
 // Update Product

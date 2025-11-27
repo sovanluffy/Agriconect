@@ -2,29 +2,23 @@
 import { Request, Response } from "express";
 import * as cartService from "@/service/cartService";
 
-export const addMultipleItemsController = async (req: Request, res: Response) => {
+export const addItemController = async (req: Request, res: Response) => {
   try {
     const user_id = req.user?._id;
-    const { products } = req.body;
+    const { product_id, quantity } = req.body;
 
     if (!user_id) throw new Error("User not found in token");
-    if (!products || !Array.isArray(products)) throw new Error("Products array is required");
+    if (!product_id || !quantity) throw new Error("Product ID and quantity are required");
 
-    const cartItems = await cartService.addMultipleItemsToCart(user_id, products);
-    res.status(201).json(cartItems);
+    const result = await cartService.addItemToCart(user_id, product_id, quantity);
+
+    res.status(201).json({
+      success: true,
+      message: "Item added to cart",
+      cart_total: result.cart_total,
+      cart_item: result.cart_item,
+    });
   } catch (error: any) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-export const getCartController = async (req: Request, res: Response) => {
-  try {
-    const user_id = req.user?._id;
-    if (!user_id) throw new Error("User not found in token");
-
-    const items = await cartService.getCartItems(user_id);
-    res.status(200).json(items);
-  } catch (error: any) {
-    res.status(400).json({ message: error.message });
+    res.status(400).json({ success: false, message: error.message });
   }
 };

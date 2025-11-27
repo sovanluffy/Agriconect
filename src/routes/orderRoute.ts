@@ -15,7 +15,7 @@ const router = Router();
  * @swagger
  * /api/orders:
  *   post:
- *     summary: Create a new order
+ *     summary: Checkout and create a new order
  *     tags: [Order]
  *     security:
  *       - BearerAuth: []
@@ -26,14 +26,59 @@ const router = Router();
  *           schema:
  *             type: object
  *             required:
- *               - cart_id
+ *               - username
+ *               - address
+ *               - phone
  *             properties:
- *               cart_id:
+ *               username:
  *                 type: string
- *                 example: "64a7f0c2e1b2c3d4e5f67890"
+ *                 example: "John Doe"
+ *               address:
+ *                 type: string
+ *                 example: "123 Main Street, Phnom Penh"
+ *               phone:
+ *                 type: string
+ *                 example: "+855123456789"
  *     responses:
  *       201:
  *         description: Order created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     order_id:
+ *                       type: string
+ *                     username:
+ *                       type: string
+ *                     address:
+ *                       type: string
+ *                     phone:
+ *                       type: string
+ *                     total:
+ *                       type: number
+ *                     status:
+ *                       type: string
+ *                     date:
+ *                       type: string
+ *                     items:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           product_id:
+ *                             type: string
+ *                           quantity:
+ *                             type: number
+ *                           price:
+ *                             type: number
  *       400:
  *         description: Missing fields or cart not found
  *       500:

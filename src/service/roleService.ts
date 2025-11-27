@@ -1,7 +1,39 @@
-import { roleModel } from "@/models/roleModel";
+import { roleModel, IRole } from "@/models/roleModel";
 import { userRoleModel } from "@/models/userRoleModel";
 import { FarmerModel } from "@/models/farmerModel";
-import { userModel } from "@/models/userModel"; // your User model
+import { userModel } from "@/models/userModel";
+
+// -------------------- Role CRUD --------------------
+
+// Create role
+export const createRole = async (name: string, description?: string) => {
+  const existing = await roleModel.findOne({ name });
+  if (existing) return "Role already exists";
+
+  const role = await roleModel.create({ name, description });
+  return role;
+};
+
+// Read / list roles
+export const getRoles = async () => {
+  return await roleModel.find();
+};
+
+// Update role
+export const updateRole = async (roleId: string, data: Partial<IRole>) => {
+  const updated = await roleModel.findByIdAndUpdate(roleId, data, { new: true });
+  if (!updated) throw new Error("Role not found");
+  return updated;
+};
+
+// Delete role
+export const deleteRole = async (roleId: string) => {
+  const deleted = await roleModel.findByIdAndDelete(roleId);
+  if (!deleted) throw new Error("Role not found");
+  return "Role deleted successfully";
+};
+
+// -------------------- Assign Farmer Role --------------------
 
 export const assignFarmerRoleToUser = async (targetUserId: string) => {
   // Find Farmer role
@@ -34,7 +66,7 @@ export const assignFarmerRoleToUser = async (targetUserId: string) => {
       full_name: user.full_name,
       email: user.email,
       phone: user.phone,
-      address: user.address, // optional, if user has it
+      address: user.address,
     });
   }
 

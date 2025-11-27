@@ -4,36 +4,51 @@ import { OrderModel } from "@/models/orderModel";
 import { OrderItemModel } from "@/models/orderItemModel";
 import { CartModel } from "@/models/CartModel";
 
+// Service handles all the business logic
 export const createOrderService = async (req: Request) => {
   const userId = req.user?._id;
-  if (!userId) throw new Error("Unauthorized");
+  if (!userId) throw new Error("Unauthorized: User not found");
 
-  const { cart_id } = req.body;
-  if (!cart_id) throw new Error("cart_id is required");
+  const { username, address, phone } = req.body;
+  if (!username || !address || !phone) throw new Error("Username, address, and phone are required");
 
-  // Find all cart items
-  const cartItems = await CartItemModel.find({ cart_id }).populate("product_id");
+  // Find the cart for this user
+  const cart = await CartModel.findOne({ user_id: userId });
+  if (!cart) throw new Error("Cart not found for this user");
+
+  const cartItems = await CartItemModel.find({ cart_id: cart._id }).populate("product_id");
   if (!cartItems || cartItems.length === 0) throw new Error("No cart items found");
 
+  // Create order
   let total = 0;
-
-  // Create Order
-  const order = await OrderModel.create({
+  const order = new OrderModel({
     user_id: userId,
-    total: 0, // temporarily 0, will update after items
+    total: 0, // temporary
     status: "completed",
     date: new Date(),
+    username,
+    address,
+    phone,
   });
+  await order.save();
 
-  //  Create OrderItems
+  // Create order items
+  const orderItems: any[] = [];
   for (const item of cartItems) {
     const product = item.product_id as any;
     const price = product.price;
     const quantity = item.quantity;
     total += price * quantity;
 
-    await OrderItemModel.create({
+    const orderItem = new OrderItemModel({
       order_id: order._id,
+      product_id: product._id,
+      quantity,
+      price,
+    });
+    await orderItem.save();
+
+    orderItems.push({
       product_id: product._id,
       quantity,
       price,
@@ -44,13 +59,18 @@ export const createOrderService = async (req: Request) => {
   order.total = total;
   await order.save();
 
-  // Clear cart
-  await CartItemModel.deleteMany({ cart_id });
-  await CartModel.deleteMany({ cart_id });
-
+  // Clear user's cart
+  await CartItemModel.deleteMany({ cart_id: cart._id });
+  await CartModel.findByIdAndDelete(cart._id);
 
   return {
-    message: "Order completed and cart cleared",
-    data: order,
+    order_id: order._id,
+    username: order.username,
+    address: order.address,
+    phone: order.phone,
+    total: order.total,
+    status: order.status,
+    date: order.date,
+    items: orderItems,
   };
 };

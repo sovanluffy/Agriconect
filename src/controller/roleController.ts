@@ -1,34 +1,63 @@
-// controller/adminController.ts
 import { Request, Response } from "express";
-import { assignFarmerRoleToUser } from "@/service/roleService";
-import { userRoleModel } from "@/models/userRoleModel";
+import {
+  createRole,
+  getRoles,
+  updateRole,
+  deleteRole,
+  assignFarmerRoleToUser,
+} from "@/service/roleService";
 
-export const assignFarmerController = async (req: Request, res: Response) => {
+// Create Role
+export const createRoleController = async (req: Request, res: Response) => {
   try {
-    // Admin ID from token (for auth only, not target)
-    const adminId = req.user?._id;
-    if (!adminId) return res.status(401).json({ message: "Unauthorized" });
+    const { name, description } = req.body;
+    const result = await createRole(name, description);
+    res.status(201).json({ success: true, data: result });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
-    // Target userId from request body
-    const { userId } = req.body;
-    if (!userId) return res.status(400).json({ message: "userId is required" });
+// Get all Roles
+export const getRolesController = async (_req: Request, res: Response) => {
+  try {
+    const roles = await getRoles();
+    res.status(200).json({ success: true, data: roles });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
-    // Assign Farmer role
-    const result = await assignFarmerRoleToUser(userId);
+// Update Role
+export const updateRoleController = async (req: Request, res: Response) => {
+  try {
+    const { roleId } = req.params;
+    const data = req.body;
+    const updatedRole = await updateRole(roleId, data);
+    res.status(200).json({ success: true, data: updatedRole });
+  } catch (error: any) {
+    res.status(404).json({ success: false, message: error.message });
+  }
+};
 
-    // Fetch updated roles of target user
-    const userRoles = await userRoleModel
-      .find({ user_id: userId })
-      .populate("role_id");
+// Delete Role
+export const deleteRoleController = async (req: Request, res: Response) => {
+  try {
+    const { roleId } = req.params;
+    const message = await deleteRole(roleId);
+    res.status(200).json({ success: true, message });
+  } catch (error: any) {
+    res.status(404).json({ success: false, message: error.message });
+  }
+};
 
-    const roles = userRoles.map(r => (r.role_id as any).name);
-
-    return res.status(200).json({
-      message: result,
-      roles,
-    });
-
-  } catch (err: any) {
-    return res.status(500).json({ message: "Server error", error: err.message });
+// Assign Farmer Role to User
+export const assignFarmerRoleController = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.body; // Must be sent in request body
+    const message = await assignFarmerRoleToUser(userId);
+    res.status(200).json({ success: true, message });
+  } catch (error: any) {
+    res.status(404).json({ success: false, message: error.message });
   }
 };

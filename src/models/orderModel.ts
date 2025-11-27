@@ -5,6 +5,9 @@ export interface Order extends Document {
   date: Date;
   status: "pending" | "completed" | "cancelled";
   total: number;
+  username: string;
+  address: string;
+  phone: string;
 }
 
 const orderSchema = new Schema<Order>(
@@ -13,6 +16,9 @@ const orderSchema = new Schema<Order>(
     date: { type: Date, default: Date.now },
     status: { type: String, enum: ["pending", "completed", "cancelled"], default: "pending" },
     total: { type: Number, required: true },
+    username: { type: String, required: true },
+address: { type: String, required: true },
+phone: { type: String, required: true },
   },
   { timestamps: true }
 );

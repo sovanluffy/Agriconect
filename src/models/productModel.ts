@@ -7,6 +7,7 @@ export interface ProductDocument extends Document {
   category_id: mongoose.Schema.Types.ObjectId;
   status: "active" | "out of stock";
   farmer_id: mongoose.Schema.Types.ObjectId;
+  image?: string; // new field for image URL or path
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -18,7 +19,7 @@ const productSchema = new Schema<ProductDocument>(
     stock: { type: Number, required: true },
     category_id: {
       type: Schema.Types.ObjectId,
-      ref: "Category", // Match Category model name exactly
+      ref: "Category",
       required: true,
     },
     status: { type: String, enum: ["active", "out of stock"], default: "active" },
@@ -27,6 +28,7 @@ const productSchema = new Schema<ProductDocument>(
       ref: "Farmer",
       required: true,
     },
+    image: { type: String, default: "" }, // optional image URL
   },
   { timestamps: true }
 );
